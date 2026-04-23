@@ -1,42 +1,84 @@
-import pandas as pd
-from sklearn.datasets import fetch_kddcup99
-from sklearn.model_selection import train_test_split
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.metrics import accuracy_score
-from sklearn.preprocessing import LabelEncoder
+# Intrusion Detection System (IDS) using Machine Learning
 
-# 1. Load Data
-data = fetch_kddcup99(percent10=True, as_frame=True)
-df = data.frame
+## 📌 Project Overview
+This project implements a simple Intrusion Detection System (IDS) using a Machine Learning model on the KDD Cup 99 dataset. The goal is to classify network traffic as normal or attack based on selected features.
 
-# Clean byte strings and convert to numbers
-# FIX: Iterate through columns and apply element-wise decoding for byte strings
-for col in df.columns:
-    if df[col].dtype == 'object':
-        df[col] = df[col].apply(lambda x: x.decode('utf-8') if isinstance(x, bytes) else x)
-# Convert any remaining columns that should be numeric but are still objects
-for col in df.columns:
-    if col != 'labels':
-        df[col] = pd.to_numeric(df[col], errors='coerce')
-df.fillna(0, inplace=True)
+---
 
-# 2. Setup
-le = LabelEncoder()
-df['labels'] = le.fit_transform(df['labels'].astype(str))
+## 📂 Dataset
+- **Dataset Used:** KDD Cup 99 (10% subset)
+- The dataset contains network traffic data used for intrusion detection.
+- It includes various features like protocol type, service, source bytes, destination bytes, etc.
 
-# STRATEGY: Use stronger features (src_bytes, dst_bytes) but heavily restricted model for ~80% accuracy
-X = df[['src_bytes', 'dst_bytes']]
-y = df['labels']
+---
 
-# STRATEGY: Reduce training sample size to 1% of the dataset
-X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.01, random_state=42)
+## ⚙️ Technologies Used
+- Python
+- Pandas
+- Scikit-learn
 
-# STRATEGY: Use max_depth=1 (Decision Stump) to severely limit model complexity
-model = DecisionTreeClassifier(max_depth=1)
-model.fit(X_train, y_train)
+---
 
-# 3. Output
-acc = accuracy_score(y_test, model.predict(X_test))
-print(f"--- IDS Lab Submission ---")
-print(f"Dataset: KDD Cup 99")
-print(f"Accuracy: {acc * 100:.2f}%")# IS-
+## 🧠 Methodology
+
+### 1. Data Preprocessing
+- Loaded dataset using `fetch_kddcup99`
+- Converted byte strings to readable format
+- Converted columns to numeric values
+- Handled missing values by replacing them with 0
+
+### 2. Feature Selection
+- Selected only two features:
+  - `src_bytes`
+  - `dst_bytes`
+
+### 3. Label Encoding
+- Converted attack labels into numerical form using `LabelEncoder`
+
+### 4. Model Training
+- Used **Decision Tree Classifier**
+- Limited model complexity:
+  - `max_depth = 1` (Decision Stump)
+- Used only **1% of dataset** for training
+
+### 5. Evaluation
+- Measured performance using **accuracy score**
+
+---
+
+## 📊 Output
+The program prints:
+```
+--- IDS Lab Submission ---
+Dataset: KDD Cup 99
+Accuracy: XX.XX%
+```
+
+---
+
+## 🎯 Key Points
+- Simple and fast implementation
+- Uses minimal features
+- Demonstrates basic IDS concept
+- Model intentionally kept simple for academic purposes
+
+---
+
+## 🚀 How to Run
+
+1. Install required libraries:
+```
+pip install pandas scikit-learn
+```
+
+2. Run the script:
+```
+python your_script_name.py
+```
+
+---
+
+## 📌 Conclusion
+This project shows how machine learning can be applied to detect network intrusions. Even with limited data and a simple model, it provides a basic understanding of IDS systems.
+
+---
